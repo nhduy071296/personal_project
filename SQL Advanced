@@ -1,0 +1,124 @@
+SELECT h.hacker_id, h.name, count(c.challenge_id) AS COUNTER
+FROM hackers h
+INNER JOIN challenges c
+ON h.hacker_id = c.hacker_id
+WHERE count(c.challenge_id) = (SELECT MAX(count(c.challenge_id)
+                                FROM challenges c)
+OR count(c.challenge_id) = (SELECT DISTINCT count(c.challenge_id)
+         FROM challenges c
+         GROUP BY c.hacker_id)
+GROUP BY h.hacker_id, h.name
+ORDER BY count(c.challenge_id) DESC, h.hacker_id;
+
+
+SELECT H.hacker_id, H.name, COUNT(C.challenge_id) as no_of_challenges 
+FROM Hackers H 
+JOIN Challenges C 
+ON H.hacker_id = C.hacker_id 
+GROUP BY H.hacker_id, H.name 
+HAVING no_of_challenges = (SELECT count(challenge_id) AS max_count 
+                           FROM Challenges 
+                           GROUP BY hacker_id 
+                           ORDER BY max_count DESC LIMIT 1) 
+OR no_of_challenges IN (SELECT t.cnt 
+                        FROM 
+                            (SELECT count(challenge_id) AS cnt 
+                             FROM Challenges 
+                             GROUP BY hacker_id) t 
+                        GROUP BY t.cnt 
+                        HAVING COUNT(t.cnt) = 1) 
+ORDER BY no_of_challenges DESC, H.hacker_id ASC;
+
+SELECT CONCAT(first_name, ' ', last_name) FULL_NAME,
+    CASE
+        WHEN active = 1 THEN 'Active'
+        ELSE 'Inactive'
+    END Activity_type
+FROM customer;
+
+SELECT c.first_name, c.last_name,
+sum(p.amount) tot_payment_amt,
+count(p.amount) num_payments,
+sum(p.amount) /
+CASE WHEN count(p.amount) = 0 THEN 1
+ELSE count(p.amount)
+END avg_payment
+FROM customer c
+LEFT OUTER JOIN payment p
+ON c.customer_id = p.customer_id
+GROUP BY c.first_name, c.last_name;
+
+
+SELECT name,
+CASE name
+WHEN 'English' THEN 'latin1'
+WHEN 'Italian' THEN 'latin1'
+WHEN 'French' THEN 'latin1'
+WHEN 'German' THEN 'latin1'
+WHEN 'Japanese' THEN 'utf8'
+WHEN 'Mandarin' THEN 'utf8'
+ELSE 'Unknown'
+END character_set
+FROM language;
+
+SELECT name,
+CASE 
+WHEN name IN ('English','Italian', 'French', 'German') THEN 'latin1'
+WHEN name IN ('Japanese', 'Mandarin') THEN 'utf8'
+ELSE 'Unknown'
+END character_set
+FROM language;
+
+SELECT 
+sum(CASE WHEN rating = 'G' THEN 1 ELSE 0 END) g,
+sum(CASE WHEN rating = 'PG' THEN 1 ELSE 0 END) pg,
+sum(CASE WHEN rating = 'NC-17' THEN 1 ELSE 0 END) nc_17,
+sum(CASE WHEN rating = 'PG-13' THEN 1 ELSE 0 END) pg_13,
+sum(CASE WHEN rating = 'R' THEN 1 ELSE 0 END) r
+FROM film;
+
+SELECT f.film_id, f.title, count(i.inventory_id) num_copies
+FROM film f
+RIGHT OUTER JOIN inventory i
+ON f.film_id = i.film_id
+GROUP BY f.film_id, f.title;
+
+SELECT f.film_id, f.title, i.inventory_id
+FROM inventory i
+RIGHT OUTER JOIN film f
+ON f.film_id = i.film_id
+WHERE f.film_id BETWEEN 13 AND 15;
+
+SELECT film_id, count(*) FROM film
+GROUP BY film_id;
+
+SELECT c.customer_id, sum(p.amount) Total_Amount
+FROM customer c
+RIGHT OUTER JOIN payment p
+ON c.customer_id = p.customer_id
+GROUP BY c.customer_id;
+
+SELECT ones.num + tens.num + 1
+FROM 
+(SELECT 0 num UNION ALL
+SELECT 1 num UNION ALL
+SELECT 2 num UNION ALL
+SELECT 3 num UNION ALL
+SELECT 4 num UNION ALL
+SELECT 5 num UNION ALL
+SELECT 6 num UNION ALL
+SELECT 7 num UNION ALL
+SELECT 8 num UNION ALL
+SELECT 9 num) ones
+CROSS JOIN
+(SELECT 0 num UNION ALL
+SELECT 10 num UNION ALL
+SELECT 20 num UNION ALL
+SELECT 30 num UNION ALL
+SELECT 40 num UNION ALL
+SELECT 50 num UNION ALL
+SELECT 60 num UNION ALL
+SELECT 70 num UNION ALL
+SELECT 80 num UNION ALL
+SELECT 90 num) tens
+ORDER BY ones.num+tens.num;
